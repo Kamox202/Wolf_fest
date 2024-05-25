@@ -5,8 +5,27 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PASPNET_PijarowskiK_Wolf_Feast"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="MainWindow" Height="1000" Width="1000">
+    <Grid Background="#FF052F04" Height="1000" VerticalAlignment="Top">
+        <Canvas x:Name="can" HorizontalAlignment="Center" Height="800" VerticalAlignment="Center" Width="800" />
+        <Button x:Name="Spawn_wolf" Content="Spawn Wolf" Click="spawn_wol" Margin="100,900,813,80">
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FF828181"/>
+                    <GradientStop Color="#FFFFFCFC" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+        </Button>
+        <Button x:Name="Spawn_rabit" Content="Spawn Rabit" VerticalAlignment="Top" Click="spawn_rab" Margin="229,900,661,0">
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFFFFCFC"/>
+                    <GradientStop Color="#FF828181" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+        </Button>
+        <Button x:Name="Start_simulation" Content="Start"  Click="start_sim" Background="#FF5EC7C4" BorderBrush="#FF225288" Foreground="White" Margin="872,900,77,80"/>
+        <Button x:Name="Stop" Content="Stop" Click="stop" HorizontalAlignment="Left" Margin="827,900,0,0" VerticalAlignment="Top" Background="#FFFD0000" Foreground="White" BorderBrush="Black"/>
 
     </Grid>
 </Window>
