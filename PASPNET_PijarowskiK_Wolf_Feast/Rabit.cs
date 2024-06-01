@@ -15,26 +15,18 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
     {
         private Thread RabitThread;
         private Random random = new Random();
-        private bool dead = true;
         private int targetX, targetY;
-        private string Name;
+        public int ID;
         
-        
-        public Rabit(string name = null, Canvas can = null)
+        public Rabit(int name = 0, Canvas can = null)
         {
             
-            this.Name = name;
+            this.ID = name;
             this.v = 1;
-            dead = false;
+            
             initBody(can);
             body.Fill = Brushes.White;
             set_wonder_destination();
-
-
-
-
-            RabitThread = new Thread(wander);
-            
         }
         private void set_wonder_destination()
         {
@@ -51,17 +43,23 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         public void wander()
         {
             set_wonder_destination();
-            x += targetX; Canvas.SetLeft(body, x);
-            y += targetY; Canvas.SetTop(body, y);
+            x += targetX; 
+            y += targetY; 
         }
 
-        public void death()
-        { 
-            
-            existance.Children.Remove(body);
-            
-        }
+        
 
         ~Rabit() { }
+
+
+        public void Decompose(List<Rabit> rabits)
+        {
+            rabits.Remove(this);
+        }
+        public void Start()
+        {
+            RabitThread = new Thread(new ThreadStart(this.wander));
+            RabitThread.Start();
+        }
     }
 }

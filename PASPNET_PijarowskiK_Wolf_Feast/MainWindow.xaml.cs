@@ -20,6 +20,8 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
     public partial class MainWindow : Window
     {
         List<Rabit> rabits = new List<Rabit>();
+        List<Rabit> DeadRabits = new List<Rabit>();
+
         List<Wolf> wolfs = new List<Wolf>();
 
         
@@ -39,12 +41,12 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
        
         
 
-        int rabitID = 1;
+        int rabitID = 0;
         int WolfID = 1;
         private void spawn_rab(object sender, RoutedEventArgs e)
         {
             
-            Rabit rabit = new Rabit("rabit"+rabitID, can);
+            Rabit rabit = new Rabit(rabitID, can);
             rabitID++;
             rabits.Add(rabit);
 
@@ -53,7 +55,7 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         }
         private void spawn_wol(object sender, RoutedEventArgs e)
         {
-            Wolf wolf = new Wolf("rabit" + WolfID, can);
+            Wolf wolf = new Wolf("Wolf " + WolfID, can, rabits);
             WolfID++;
             wolfs.Add(wolf);
 
@@ -63,7 +65,8 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         {
             Thread t = new Thread(new ThreadStart(animate));
             t.Start();
-            
+
+
         }
 
         private void animate()
@@ -81,22 +84,43 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
                 {
                     foreach (Wolf wolf in wolfs)
                     {
-                        wolf.hunt(rabits);
+                        wolf.Start();
+                        Canvas.SetLeft(wolf.body, wolf.x);
+                        Canvas.SetTop(wolf.body, wolf.y);
                     }
 
                     foreach (Rabit rabit in rabits)
                     {
-                        rabit.wander();
+                        rabit.Start();
+                        Canvas.SetLeft(rabit.body, rabit.x);
+                        Canvas.SetTop(rabit.body, rabit.y);
+                        if (rabit.alive == false)
+                        {
+                            DeadRabits.Add(rabit);
+                        }
+                    }
+                    foreach (Rabit rabit in DeadRabits)
+                    {
+                        lock (rabit)
+                        {
+                            can.Children.Remove(rabit.body);
+                            rabits.Remove(rabit);
+                        }
+                    }
+                    lock (this)
+                    {
+                        DeadRabits.Clear();
                     }
                 }));
 
 
-                Thread.Sleep(10);
+                Thread.Sleep(1);
             }
         }
 
         private void stop(object sender, RoutedEventArgs e)
         {
+
             close(null, null);
         }
         private void close(object sender, System.ComponentModel.CancelEventArgs e)

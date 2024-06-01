@@ -16,6 +16,7 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         public volatile int x, y, v;
         public Ellipse body;
         public Canvas existance;
+        public bool alive = true;
 
 
         protected void initBody(Canvas canva)
@@ -23,7 +24,6 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
             body = new Ellipse();
             x = random.Next(0, 800);
             y = random.Next(0, 780);
-            body = new Ellipse();
             body.Width = 10;
             body.Height = 10;
 
@@ -32,9 +32,18 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
             Canvas.SetLeft(body, x);
             Canvas.SetTop(body, y);
             canva.Children.Add(body);
-            existance = canva;
+            
+            //existance = canva;
 
         }
+
+        public void death()
+        {
+            alive = false;
+            //existance.Children.Remove(body);
+           
+        }
+        
     }
 
 }
