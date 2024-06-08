@@ -42,9 +42,12 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         }
         public void wander()
         {
-            set_wonder_destination();
-            x += targetX; 
-            y += targetY; 
+            while (alive)
+            {
+                set_wonder_destination();
+                x += targetX;
+                y += targetY;
+            }
         }
 
         

@@ -120,9 +120,11 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         }
         public void hunt()
         {
-            if (!locked) AquirePray(RabitList);
-            moveTo(RabitList);
-            
+            while (RabitList.Count > 0)
+            {
+                if (!locked) AquirePray(RabitList);
+                moveTo(RabitList);
+            }
         }
 
         public void eat(List<Rabit> rabits)

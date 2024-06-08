@@ -65,7 +65,12 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         {
             Thread t = new Thread(new ThreadStart(animate));
             t.Start();
+            foreach (Rabit rabit in rabits)
+            {
+                rabit.Start();
+            }
 
+            foreach (Wolf f in wolfs) { f.Start(); }
 
         }
 
@@ -84,14 +89,14 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
                 {
                     foreach (Wolf wolf in wolfs)
                     {
-                        wolf.Start();
+                        
                         Canvas.SetLeft(wolf.body, wolf.x);
                         Canvas.SetTop(wolf.body, wolf.y);
                     }
 
                     foreach (Rabit rabit in rabits)
                     {
-                        rabit.Start();
+                        
                         Canvas.SetLeft(rabit.body, rabit.x);
                         Canvas.SetTop(rabit.body, rabit.y);
                         if (rabit.alive == false)
