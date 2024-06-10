@@ -21,12 +21,14 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         private Rabit Pray;
         private bool locked;
         private List<Rabit> RabitList;
-        
-        
-        public Wolf(string name = null, Canvas canva = null, List<Rabit> Prays = null)
+        private List<Sim_Object> Objects;
+
+
+        public Wolf(string name, Canvas canva, List<Sim_Object> Prays)
         {
-            RabitList = Prays;
-            v = 3;
+            this.Objects = Prays;
+            RabitList = Prays.OfType<Rabit>().ToList();
+            this.v = 3;
             Name = name;
             initBody(canva);
             body.Fill = Brushes.Black;
@@ -63,28 +65,6 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
                     locked = false;
                     AquirePray(rabits);
                 }
-                //var minElement = rabits
-                //.Select((value, index) => new { Value = value, Index = index })
-                //.OrderBy(r => r.Value.x)
-                //.ThenBy(r => r.Value.y)
-                //.FirstOrDefault();
-                //victim = 0;
-                //victimX = rabits[victim].x; victimY = rabits[victim].y;
-
-
-
-                //foreach (Rabit ra in rabits)
-                //{
-                //    int compare = ra.x - x + ra.y - y;
-                //    if (compare < sum)
-                //    {
-                //        victimX = ra.x;
-                //        victimY = ra.y;
-                //        sum = compare;
-                //        victim = ra.ID;
-                //    }
-                //    i++;
-                //}
 
 
             }
@@ -94,20 +74,16 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
 
         private void moveTo(List<Rabit> rabits)
         {
-            if (rabits.Count == 0) { victimX = x; victimY = y; }
-            //if (victimX < x) { x -= v; Canvas.SetLeft(body, x); }
-            //if (victimX > x) { x += v; Canvas.SetLeft(body, x); }
-            //if (victimY < y) { y -= v; Canvas.SetTop(body, y); }
-            //if (victimY > y) { y += v; Canvas.SetTop(body, y); }
+           
             int dx = victimX - x ;
             int dy = victimY - y ;
             int distance = (int)Math.Sqrt(Math.Pow(dx * dx,2) + Math.Pow(dy * dy,2));
 
-            Debug.WriteLine(dx + " " + dy + " " + distance);
+            
 
             if (dx != 0) dx = dx / Math.Abs(dx); // Normalizacja do -1, 0, 1
             if (dy != 0) dy = dy / Math.Abs(dy); // Normalizacja do -1, 0, 1
-            Debug.WriteLine(dx + " " + dy + " " + distance);
+            
 
             x += dx * v;
             y += dy * v;
@@ -116,14 +92,17 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
             if (Math.Abs(victimX - x) <= 1 && Math.Abs(victimY - y) <= 1 && rabits.Count > 0)
             {
                 eat(rabits);
+                locked = false;
             }
         }
         public void hunt()
         {
-            while (RabitList.Count > 0)
+            while (alive)
             {
+                RabitList = Objects.OfType<Rabit>().ToList();
                 if (!locked) AquirePray(RabitList);
                 moveTo(RabitList);
+                Thread.Sleep(100);
             }
         }
 

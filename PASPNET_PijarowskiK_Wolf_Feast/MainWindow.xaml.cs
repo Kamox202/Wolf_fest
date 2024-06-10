@@ -19,7 +19,7 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<Rabit> rabits = new List<Rabit>();
+        List<Sim_Object> objects = new List<Sim_Object>();
         List<Rabit> DeadRabits = new List<Rabit>();
 
         List<Wolf> wolfs = new List<Wolf>();
@@ -48,29 +48,32 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
             
             Rabit rabit = new Rabit(rabitID, can);
             rabitID++;
-            rabits.Add(rabit);
-
+            lock (this)
+            {
+                objects.Add(rabit);
+                if (started) rabit.Start();
+            }
 
             Debug.WriteLine("spawn rabit button clicked");
         }
         private void spawn_wol(object sender, RoutedEventArgs e)
         {
-            Wolf wolf = new Wolf("Wolf " + WolfID, can, rabits);
+            Wolf wolf = new Wolf("Wolf " + WolfID, can, objects);
             WolfID++;
-            wolfs.Add(wolf);
-
+            objects.Add(wolf);
+            if (started) wolf.Start();
             
         }
         private void start_sim(object sender, RoutedEventArgs e)
         {
             Thread t = new Thread(new ThreadStart(animate));
             t.Start();
-            foreach (Rabit rabit in rabits)
+            foreach (Rabit rabit in objects.OfType<Rabit>())
             {
                 rabit.Start();
             }
 
-            foreach (Wolf f in wolfs) { f.Start(); }
+            foreach (Wolf f in objects.OfType<Wolf>()) { f.Start(); }
 
         }
 
@@ -87,14 +90,14 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
             {
                 Dispatcher.Invoke((Action)(() =>
                 {
-                    foreach (Wolf wolf in wolfs)
+                    foreach (Wolf wolf in objects.OfType<Wolf>())
                     {
                         
                         Canvas.SetLeft(wolf.body, wolf.x);
                         Canvas.SetTop(wolf.body, wolf.y);
                     }
 
-                    foreach (Rabit rabit in rabits)
+                    foreach (Rabit rabit in objects.OfType<Rabit>())
                     {
                         
                         Canvas.SetLeft(rabit.body, rabit.x);
@@ -109,7 +112,7 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
                         lock (rabit)
                         {
                             can.Children.Remove(rabit.body);
-                            rabits.Remove(rabit);
+                            objects.Remove(rabit);
                         }
                     }
                     lock (this)

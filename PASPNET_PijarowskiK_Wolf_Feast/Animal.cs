@@ -10,10 +10,10 @@ using System.Windows;
 
 namespace PASPNET_PijarowskiK_Wolf_Feast
 {
-    internal class Animal
+    internal class Animal : Sim_Object
     {
         protected Random random = new Random();
-        public volatile int x, y, v;
+        public volatile int v;
         public Ellipse body;
         public Canvas existance;
         public bool alive = true;

@@ -17,6 +17,7 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         private Random random = new Random();
         private int targetX, targetY;
         public int ID;
+        private bool destination;
         
         public Rabit(int name = 0, Canvas can = null)
         {
@@ -30,27 +31,39 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         }
         private void set_wonder_destination()
         {
-            targetX = random.Next(0, 1000);
-            targetY = random.Next(0, 1000);
-            if (targetX % 2 == 0) { targetX = 1; }else { targetX = -1; }
-            if (targetY % 2 == 0) { targetY = 1; }else { targetY = -1; }
-
-            if (x <= 0) { targetX = 1; }
-            if (x >= 800) { targetX = -1; }
-            if (y <= 0) { targetY = 1; }
-            if (y >= 800) { targetY = -1; }
+            targetX = random.Next(0, 800);
+            targetY = random.Next(0, 800);
+            destination = true;
         }
         public void wander()
         {
             while (alive)
             {
-                set_wonder_destination();
-                x += targetX;
-                y += targetY;
+               if(!destination) set_wonder_destination();
+                move();
+                Thread.Sleep(100);
             }
         }
 
-        
+        private void move()
+        {
+
+            int dx = targetX - x;
+            int dy = targetY - y;
+            int distance = (int)Math.Sqrt(Math.Pow(dx * dx, 2) + Math.Pow(dy * dy, 2));
+
+
+
+            if (dx != 0) dx = dx / Math.Abs(dx); // Normalizacja do -1, 0, 1
+            if (dy != 0) dy = dy / Math.Abs(dy); // Normalizacja do -1, 0, 1
+
+
+            x += dx * v;
+            y += dy * v;
+
+
+            if (x == targetX && y == targetY) destination = false;
+        }
 
         ~Rabit() { }
 
@@ -58,6 +71,7 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         public void Decompose(List<Rabit> rabits)
         {
             rabits.Remove(this);
+            
         }
         public void Start()
         {
