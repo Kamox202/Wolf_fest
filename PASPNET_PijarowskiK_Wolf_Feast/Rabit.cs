@@ -15,25 +15,24 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
     internal class Rabit : Animal
     {
         private Thread RabitThread;
-        private Random random = new Random();
-        private int targetX, targetY;
+        private int targetX, targetY, distanceToClosestWolf = 10000, distanceToClosestNest = 10000;
         public int ID;
         private bool destination;
-        public bool hiden, alerted;
+        public bool alerted;
         private List<Sim_Object> Objects;
         private List<Nest> Nests;
         private List<Wolf> Wolfs;
-        private int predatorX, predatorY, SafeNestX, SafeNestY, predatorD;
-        protected Barrier barrier;
+        private int SafeNestX, SafeNestY;
+        
         
 
-        public Rabit(int name = 0, Canvas can = null,  List<Sim_Object> Obj = null, int X = 10, int Y = 0)
+        public Rabit(int name = 0, List<Sim_Object> Obj = null, int X = 10, int Y = 0)
         {
             
             this.ID = name;
             this.v = 1;
             
-            initBody(can, X, Y,10,10,1);
+            initBody(X, Y,10,10,1);
             
             set_wonder_destination();
             this.Objects = Obj;
@@ -52,14 +51,27 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
             {
                 while (alive)
                 {
-                    calculateDistanceToClosestWolf(Wolfs);
+                    
+                    foreach (Wolf wolf in Wolfs)
+                    {
+                        if(calculate_distance(wolf) < distanceToClosestWolf) distanceToClosestWolf = calculate_distance(wolf);
+                    }
+                    if (distanceToClosestWolf < 200) { alerted = true; }
+
                     if (alerted)
                     {
 
                         v = 2;
-                        calculateDistanceToClosestNest(Nests);
-                        targetX = SafeNestX;
-                        targetY = SafeNestY;
+
+                        foreach (Nest nest in Nests)
+                        {
+                            if (calculate_distance(nest) < distanceToClosestNest) {
+                                distanceToClosestNest = calculate_distance(nest);
+                                targetX = nest.x;
+                                targetY = nest.y;
+                            }
+                        }
+                        
                     }
                     if (!destination && !alerted) set_wonder_destination();
                     move();
@@ -75,46 +87,7 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         Wolfs = objs.OfType<Wolf>().ToList();
         Nests = objs.OfType<Nest>().ToList();
         }
-        private void calculateDistanceToClosestWolf(List<Wolf> wolfs)
-        {
-            int sum = (int)Math.Sqrt(Math.Pow(this.x - wolfs.First().x, 2) + Math.Pow(this.y - wolfs.First().y, 2));
-            predatorX = wolfs.First().x;
-            predatorY = wolfs.First().y;
-            foreach (Wolf wolf in wolfs)
-            {
-                int compare = (int)Math.Sqrt(Math.Pow(this.x - wolf.x, 2) + Math.Pow(this.y - wolf.y, 2));
-                if (compare < 200 || sum < 200)
-                {
-                    alerted = true;
-
-                }
-            }
-           
-        }
-
-        public void hide()
-        {
-            hiden = true;
-            alerted = false;
-        }
-        private void calculateDistanceToClosestNest(List<Nest> nests)
-        {
-            int buforDistance = 10000;
-            foreach (Nest nest in nests)
-            {
-                if (nest.avalible && calculate_distance(nest) < buforDistance)
-                {
-                    buforDistance = calculate_distance(nest);
-                    SafeNestX = nest.x;
-                    SafeNestY = nest.y;
-                }
-            }
-
-
-
-
-        
-        }
+      
 
         private void move()
         {
@@ -139,9 +112,8 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         public void Start()
         {
             RabitThread = new Thread(new ThreadStart(this.wander));
-            
+
             RabitThread.Start();
-           // Debug.WriteLine("aktywowano Królika: " + barrier);
         }
 
         

@@ -21,7 +21,7 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         //public MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
 
 
-        protected void initBody(Canvas canva, int X = 300, int Y = 400, int w=10, int h=10, int color = 0)
+        protected void initBody( int X = 300, int Y = 400, int w=10, int h=10, int color = 0)
         {
             
             x = X;

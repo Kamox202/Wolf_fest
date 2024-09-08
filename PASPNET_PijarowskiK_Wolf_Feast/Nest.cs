@@ -16,27 +16,26 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
 {
     internal class Nest : Sim_Object
     {
-        public int capacity = 5, NoOfRabits, ID, rabitID = 0;
-        private Random random = new Random();
+        public int ID;
+        
         public bool full = false;
         public bool avalible = true;
         private Thread NestThread;
         private List<Sim_Object> Objects;
         private List<Rabit> Rabits;
-        private int RabitX, RabitY, RabitDistance;
+        private int RabitDistance;
         private Rabit closestRabit;
-        private Canvas canvas;
-        private Nest nests;
+        
         private bool active = true;
         
 
 
 
 
-        public Nest(Canvas can = null, int X = 0, int Y = 0, List<Sim_Object> Obj = null, int name = 0) {
+        public Nest(int X = 0, int Y = 0, List<Sim_Object> Obj = null, int name = 0) {
             this.ID = name;
             
-            initBody(can,X,Y,20,20,2);
+            initBody(X,Y,20,20,2);
             Objects = Obj;
             
         }
@@ -46,7 +45,7 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
             Objects = Obj;
             Rabits = Objects.OfType<Rabit>().ToList();
             
-            Debug.WriteLine("Zaktualizowano");
+            
         }
 
             public void checkForRabitsInRange(List<Rabit> rabits)
@@ -61,7 +60,7 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
                         ra.death();
                         
                         ra.alerted = false;
-                        Debug.WriteLine("Królik " + ra + " showany");
+                        
                         
                     }
                       
@@ -70,7 +69,6 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
             
             }
            
-
         
             public void operate()
             {

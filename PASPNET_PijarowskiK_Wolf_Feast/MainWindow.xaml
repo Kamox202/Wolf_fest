@@ -25,7 +25,7 @@
             </Button.Background>
         </Button>
         <Button x:Name="Start_simulation" Content="Start"  Click="start_sim" Background="#FF5EC7C4" BorderBrush="#FF225288" Foreground="White" Margin="872,900,77,80"/>
-        <Button x:Name="Stop" Content="Wyczyść" Click="stop" HorizontalAlignment="Left" Margin="797,900,0,0" VerticalAlignment="Top" Background="#FFFD0000" Foreground="White" BorderBrush="Black" RenderTransformOrigin="-0.241,0.436"/>
+        
 
     </Grid>
 </Window>

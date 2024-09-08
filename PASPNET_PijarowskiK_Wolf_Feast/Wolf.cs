@@ -28,13 +28,13 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         private List<RespawnT> respawnThreads = new List<RespawnT>();
 
 
-        public Wolf(string name, Canvas canva, List<Sim_Object> Prays)
+        public Wolf(string name, List<Sim_Object> Prays)
         {
             this.Objects = Prays;
             RabitList = Prays.OfType<Rabit>().ToList();
             this.v = 5;
-            Name = name;
-            initBody(canva,400,400);
+            this.Name = name;
+            initBody(400,400);
             
             wolfBarrier = new Barrier(3, RespawnRabits);
             
@@ -54,26 +54,19 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
 
             if (rabits.Count > 0)
             {
-                //victim = rabits.FindIndex(r => r.x == rabits.Min((rab => rab.x))-x);
 
-                int sum = (int)Math.Sqrt(Math.Pow(this.x - rabits.First().x, 2) + Math.Pow(this.y - rabits.First().y, 2));
+
+                int sum = calculate_distance(rabits.First());
                 
-                if (rabits.First().hiden == false)
-                {
+                
                     victimX = rabits.First().x;
                     victimY = rabits.First().y;
-                }
-                else
-                {
-                    victimX = this.x;
-                    victimY = this.y;
-                    sum = 10000;
-                }
+                
                 
                 foreach (Rabit ra in rabits)
                 {
-                    int compare = (int)Math.Sqrt(Math.Pow(this.x - ra.x, 2) + Math.Pow(this.y - ra.y, 2));
-                    if (compare < sum && ra.hiden == false)
+                    int compare = calculate_distance(ra);
+                    if (compare < sum )
                     {
                         victimX = ra.x;
                         victimY = ra.y;
@@ -103,16 +96,12 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
             int dy = victimY - y ;
             int distance = (int)Math.Sqrt(Math.Pow(dx * dx,2) + Math.Pow(dy * dy,2));
 
+            if (dx != 0) dx = dx / Math.Abs(dx); 
+            if (dy != 0) dy = dy / Math.Abs(dy); 
             
-
-            if (dx != 0) dx = dx / Math.Abs(dx); // Normalizacja do -1, 0, 1
-            if (dy != 0) dy = dy / Math.Abs(dy); // Normalizacja do -1, 0, 1
-            
-
             x += dx * v;
             y += dy * v;
             
-
             if (Math.Abs(victimX - x) <= 2 && Math.Abs(victimY - y) <= 2 )
             {
                 eat(rabits);
@@ -128,7 +117,6 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
 
             if (dx != 0) dx = dx / Math.Abs(dx); // Normalizacja do -1, 0, 1
             if (dy != 0) dy = dy / Math.Abs(dy); // Normalizacja do -1, 0, 1
-
 
             x += dx * v;
             y += dy * v;
@@ -150,7 +138,7 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
                         if (!locked) AquirePray(RabitList);
                         moveTo(RabitList);
                     }
-                   // Debug.WriteLine("Willk: " + this.Name + " Aktywny");
+                   
                     Thread.Sleep(100);
                 }
             }
@@ -162,9 +150,7 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
 
         public void eat(List<Rabit> rabits)
         {
-            rabits[victim].death();
-            
-            //rabits.Remove(rabits[victim]);
+            rabits[victim].death(); 
             locked= false;
             lock (this)
             {
@@ -174,8 +160,6 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
 
             }
             Thread.Sleep(500);
-            
-
         }
 
         public void Start()

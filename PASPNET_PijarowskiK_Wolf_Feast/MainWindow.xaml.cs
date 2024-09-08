@@ -60,7 +60,7 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         }
         public void spawn_rab(int X = 0, int Y = 0)
         {  
-            Rabit rabit = new Rabit(rabitID, canvas, objects, X, Y);
+            Rabit rabit = new Rabit(rabitID, objects, X, Y);
             rabitID++;
             lock (this)
             {
@@ -79,7 +79,7 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         private void spawn_nest(int X, int Y)
         {
             
-            Nest nest = new Nest(canvas, X, Y, objects ,nestID);
+            Nest nest = new Nest( X, Y, objects ,nestID);
             nestID++;        
             lock (this)
             {
@@ -92,7 +92,7 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         }
         private void spawn_wol(object sender, RoutedEventArgs e)
         {
-            Wolf wolf = new Wolf("Wolf " + WolfID, canvas, objects);
+            Wolf wolf = new Wolf("Wolf " + WolfID, objects);
             foreach(Rabit rabit in objects.OfType<Rabit>())
             {
                 rabit.updateObjects(objects);
@@ -107,9 +107,10 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         {
             threadstarted = true;
             running = true;
-            if (!started) { 
-             t = new Thread(new ThreadStart(animate));
-                t.IsBackground = false;
+            if (!started) {
+                
+                t = new Thread(new ThreadStart(animate));
+                
             t.Start();
         }
             started = true;
@@ -193,7 +194,7 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
                     {
                         obj.Stop();
                     }
-                    Debug.WriteLine("Zniszczono");
+                    
                 }
             });
 
@@ -216,29 +217,28 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
             {
                 Paint();
                 List<Sim_Object> corpses = new List<Sim_Object>(DeadRabits);
-             //   Debug.WriteLine("Wątek Główny aktywny " + running + " Thr: "+ threadstarted);
+             
                 Thread.Sleep(100);
             }
         }
      
-        private void stop(object sender, RoutedEventArgs e)
-        {
+       
 
-            close(null, null);
-        }
-        private void close(object sender, System.ComponentModel.CancelEventArgs e)
+        protected override void OnClosed(EventArgs e)
         {
+            running = false;
+            threadstarted = false;
             started = false;
             running = false;
             foreach (Wolf wolf in objects.OfType<Wolf>())
             {
                 wolf.death();
-                
+
             }
             foreach (Rabit rabit in objects.OfType<Rabit>())
             { rabit.death(); }
             objects.Clear();
-           
+
 
             foreach (Sim_Object obj in objects)
             {
@@ -252,16 +252,7 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
 
             Paint();
 
-          
-        }
-
-        protected override void OnClosed(EventArgs e)
-        {
-            running = false;
-            threadstarted = false;
-            close(e,null);
-            
-            base.OnClosed(e);
+           
         }
 
     }
