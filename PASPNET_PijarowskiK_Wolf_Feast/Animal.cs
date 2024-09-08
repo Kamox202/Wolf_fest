@@ -15,33 +15,32 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         protected Random random = new Random();
         public volatile int v;
         public Ellipse body;
-        public Canvas existance;
+        
         public bool alive = true;
 
 
-        protected void initBody(Canvas canva)
-            { 
-            body = new Ellipse();
-            x = random.Next(0, 800);
-            y = random.Next(0, 780);
-            body.Width = 10;
-            body.Height = 10;
+        //protected override void initBody(Canvas canva, int X = 300, int Y = 400)
+        //    { 
+        //    this.body = new Ellipse();
+        //    this.x = X;
+        //    this.y = Y;
+        //    this.body.Width = 10;
+        //    this.body.Height = 10;
 
-            body.HorizontalAlignment = HorizontalAlignment.Center;
-            body.VerticalAlignment = VerticalAlignment.Center;
-            Canvas.SetLeft(body, x);
-            Canvas.SetTop(body, y);
-            canva.Children.Add(body);
+        //    this.body.HorizontalAlignment = HorizontalAlignment.Center;
+        //    this.body.VerticalAlignment = VerticalAlignment.Center;
+        //    Canvas.SetLeft(body, x);
+        //    Canvas.SetTop(body, y);
+        //    canva.Children.Add(body);
             
-            //existance = canva;
+         
 
-        }
+        //}
+
 
         public void death()
         {
-            alive = false;
-            //existance.Children.Remove(body);
-           
+            alive = false;     
         }
         
     }

@@ -21,19 +21,32 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
         private Rabit Pray;
         private bool locked;
         private List<Rabit> RabitList;
-        private List<Sim_Object> Objects;
+        private List<Sim_Object> Objects, ObjectsCopy;
+        protected Random random = new Random();
+        public Barrier wolfBarrier;
+        MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
+        private List<RespawnT> respawnThreads = new List<RespawnT>();
 
 
         public Wolf(string name, Canvas canva, List<Sim_Object> Prays)
         {
             this.Objects = Prays;
             RabitList = Prays.OfType<Rabit>().ToList();
-            this.v = 3;
+            this.v = 5;
             Name = name;
-            initBody(canva);
-            body.Fill = Brushes.Black;
+            initBody(canva,400,400);
             
+            wolfBarrier = new Barrier(3, RespawnRabits);
             
+
+        }
+
+        private void RespawnRabits(Barrier barrier)
+        {
+            for (int i = 0; i < wolfBarrier.ParticipantCount * 2; i++)
+            { 
+            mainWindow.spawn_rab(random.Next(200, 600), random.Next(200, 600));
+            }
 
         }
         private void AquirePray(List<Rabit> rabits)
@@ -44,17 +57,28 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
                 //victim = rabits.FindIndex(r => r.x == rabits.Min((rab => rab.x))-x);
 
                 int sum = (int)Math.Sqrt(Math.Pow(this.x - rabits.First().x, 2) + Math.Pow(this.y - rabits.First().y, 2));
-                victimX = rabits.First().x;
-                victimY = rabits.First().y;
+                
+                if (rabits.First().hiden == false)
+                {
+                    victimX = rabits.First().x;
+                    victimY = rabits.First().y;
+                }
+                else
+                {
+                    victimX = this.x;
+                    victimY = this.y;
+                    sum = 10000;
+                }
+                
                 foreach (Rabit ra in rabits)
                 {
                     int compare = (int)Math.Sqrt(Math.Pow(this.x - ra.x, 2) + Math.Pow(this.y - ra.y, 2));
-                    if (compare < sum)
+                    if (compare < sum && ra.hiden == false)
                     {
                         victimX = ra.x;
                         victimY = ra.y;
                         sum = compare;
-                        
+                        Pray = ra;
                     }
                 }
 
@@ -74,7 +98,7 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
 
         private void moveTo(List<Rabit> rabits)
         {
-           
+          
             int dx = victimX - x ;
             int dy = victimY - y ;
             int distance = (int)Math.Sqrt(Math.Pow(dx * dx,2) + Math.Pow(dy * dy,2));
@@ -89,20 +113,50 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
             y += dy * v;
             
 
-            if (Math.Abs(victimX - x) <= 1 && Math.Abs(victimY - y) <= 1 && rabits.Count > 0)
+            if (Math.Abs(victimX - x) <= 2 && Math.Abs(victimY - y) <= 2 )
             {
                 eat(rabits);
                 locked = false;
             }
         }
+
+        public void Return()
+        {
+            int dx = 450 - x;
+            int dy = 450 - y;
+            int distance = (int)Math.Sqrt(Math.Pow(dx * dx, 2) + Math.Pow(dy * dy, 2));
+
+            if (dx != 0) dx = dx / Math.Abs(dx); // Normalizacja do -1, 0, 1
+            if (dy != 0) dy = dy / Math.Abs(dy); // Normalizacja do -1, 0, 1
+
+
+            x += dx * v;
+            y += dy * v;
+            if(Math.Abs(victimX - x) <= 2 && Math.Abs(victimY - y) <= 2 )
+            { Thread.Sleep(100); }
+
+        }
+
         public void hunt()
         {
-            while (alive)
+         while (WindowActive)  
+            {while (alive)
+                {
+                    ObjectsCopy = new List<Sim_Object>(Objects);
+                    RabitList = new List<Rabit>(ObjectsCopy.OfType<Rabit>().ToList());
+                    if (RabitList.Count == 0) { Return(); }
+                    else
+                    {
+                        if (!locked) AquirePray(RabitList);
+                        moveTo(RabitList);
+                    }
+                   // Debug.WriteLine("Willk: " + this.Name + " Aktywny");
+                    Thread.Sleep(100);
+                }
+            }
+         foreach (RespawnT RT in respawnThreads)
             {
-                RabitList = Objects.OfType<Rabit>().ToList();
-                if (!locked) AquirePray(RabitList);
-                moveTo(RabitList);
-                Thread.Sleep(100);
+                RT.Stop();
             }
         }
 
@@ -112,14 +166,16 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
             
             //rabits.Remove(rabits[victim]);
             locked= false;
+            lock (this)
+            {
+                RespawnT respawn = new RespawnT(wolfBarrier);
+                respawnThreads.Add(respawn);
+                respawn.Start();
+
+            }
+            Thread.Sleep(500);
             
 
-        }
-
-        private void ThreadAction()
-        {
-            Debug.WriteLine("Thread started");
-            
         }
 
         public void Start()

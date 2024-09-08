@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Shapes;
 
 namespace PASPNET_PijarowskiK_Wolf_Feast
@@ -12,55 +13,41 @@ namespace PASPNET_PijarowskiK_Wolf_Feast
     internal class Sim_Object
     {
         public Ellipse body;
+        public bool hasBody = false;
         public Canvas existance;
-        public volatile int x, y;
+        public volatile int x, y, color, width, height;
+        protected bool WindowActive = true;
         protected Random random = new Random();
+        //public MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
 
 
-        protected void initBody(Canvas canva)
+        protected void initBody(Canvas canva, int X = 300, int Y = 400, int w=10, int h=10, int color = 0)
         {
-            body = new Ellipse();
-            x = random.Next(0, 800);
-            y = random.Next(0, 800);
-            body.Width = 10;
-            body.Height = 10;
+            
+            x = X;
+            y = Y;
+            width = w;
+            height = h;
+            this.color = color;
 
-            body.HorizontalAlignment = HorizontalAlignment.Center;
-            body.VerticalAlignment = VerticalAlignment.Center;
-            Canvas.SetLeft(body, x);
-            Canvas.SetTop(body, y);
-            canva.Children.Add(body);
+            
+            
 
-            //existance = canva;
+            
 
         }
 
-        protected void initBody(Canvas canva, int w, int h)
-        {
-            body = new Ellipse();
-            x = random.Next(0, 800);
-            y = random.Next(0, 800);
-            body.Width = w;
-            body.Height = h;
-
-            body.HorizontalAlignment = HorizontalAlignment.Center;
-            body.VerticalAlignment = VerticalAlignment.Center;
-            Canvas.SetLeft(body, x);
-            Canvas.SetTop(body, y);
-            canva.Children.Add(body);
-
-            //existance = canva;
-
-        }
+       public void Stop(){ WindowActive = false; }
 
         protected int calculate_distance(Sim_Object a)
         {
-            return (x - a.x) * (x - a.x) + (y - a.y) * (y - a.y);
+            return (int)Math.Sqrt((this.x - a.x) * (this.x - a.x) + (this.y - a.y) * (this.y - a.y));
+           
         }
 
         protected int calculate_distance(int X, int Y)
         {
-            return (x - X) * (x - X) + (y - Y) * (y - Y);
+            return (int)Math.Sqrt((x - X) * (x - X) + (y - Y) * (y - Y));
         }
     }
 }
